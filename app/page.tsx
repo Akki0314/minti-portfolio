@@ -234,7 +234,7 @@ function AboutSection() {
         >
           <h2 className="text-4xl font-playfair mb-4 text-gray-900">Patterns That Tell Stories</h2>
           <p className="mb-4 text-gray-700">
-            Hello! I'm <span className="font-semibold text-gray-900">Minti</span>, the hands and heart behind Minti Creations. For me, art is more than just drawing—it’s a gentle meditation, a way to slow down and let creativity flow into soothing Creations.
+            Hello! I'm <span className="font-semibold text-gray-900">Mansi</span>, the hands and heart behind Minti Creations. For me, art is more than just drawing—it’s a gentle meditation, a way to slow down and let creativity flow into soothing Creations.
           </p>
           <p className="text-gray-700">
             Every piece begins with a single dot, unfolding into a universe of shapes, colors, and calm. Through my work, I hope to share that same sense of peace and quiet joy that I find while creating.
