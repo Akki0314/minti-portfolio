@@ -38,8 +38,8 @@ const galleryItems = [
   { id: 30, title: 'Celebrating indian beauty', category: 'Mandala Art', img: '/mandala-6.jpg' },
   { id: 31, title: 'Shivling', category: 'Mandala Art', img: '/mandala-7.jpg' },
   { id: 32, title: 'Separated but still connected', category: 'Mandala Art', img: '/mandala-8.jpg' },
-  { id: 33, title: 'Sunset', category: 'Photoshop Art', img: '/psd-1.jpg' },
-  { id: 34, title: 'night sky', category: 'Photoshop Art', img: '/psd-2.jpg' },
+  { id: 33, title: 'Sunset', category: 'Photoshop Art', img: '/psd-1.jpeg' },
+  { id: 34, title: 'night sky', category: 'Photoshop Art', img: '/psd-2.jpeg' },
 ];
 
 // ======== CAROUSEL IMAGES ========
