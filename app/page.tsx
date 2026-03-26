@@ -1,8 +1,7 @@
-// app/page.tsx
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { FaInstagram } from 'react-icons/fa';
 
 // ======== GALLERY ITEMS ========
@@ -39,6 +38,8 @@ const galleryItems = [
   { id: 30, title: 'Celebrating indian beauty', category: 'Mandala Art', img: '/mandala-6.jpg' },
   { id: 31, title: 'Shivling', category: 'Mandala Art', img: '/mandala-7.jpg' },
   { id: 32, title: 'Separated but still connected', category: 'Mandala Art', img: '/mandala-8.jpg' },
+  { id: 33, title: 'Sunset', category: 'Photoshop Art', img: '/psd-1.jpg' },
+  { id: 34, title: 'night sky', category: 'Photoshop Art', img: '/psd-2.jpg' },
 ];
 
 // ======== CAROUSEL IMAGES ========
@@ -96,210 +97,163 @@ function Header() {
   );
 }
 
-// ========= HERO SECTION =========
 function HeroSection() {
-  const [current, setCurrent] = useState(0);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const { scrollY } = useScroll();
+  const y = useTransform(scrollY, [0, 500], [0, 150]);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrent(prev => (prev + 1) % carouselImages.length);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const handlePrev = () => setCurrent(prev => (prev - 1 + carouselImages.length) % carouselImages.length);
-  const handleNext = () => setCurrent(prev => (prev + 1) % carouselImages.length);
-
-  const floatingShapes = [
-    { size: 50, top: '20%', left: '10%', rotate: 0 },
-    { size: 80, top: '40%', left: '70%', rotate: 45 },
-    { size: 60, top: '70%', left: '30%', rotate: -30 },
-    { size: 100, top: '10%', left: '50%', rotate: 15 },
-    { size: 40, top: '60%', left: '80%', rotate: -45 },
-  ];
-
-  const startX = useRef(0);
-  const endX = useRef(0);
-
-  const handleDragStart = (e: React.TouchEvent | React.MouseEvent) => {
-    startX.current = 'touches' in e ? e.touches[0].clientX : (e as React.MouseEvent).clientX;
-  };
-  const handleDragEnd = (e: React.TouchEvent | React.MouseEvent) => {
-    endX.current = 'changedTouches' in e ? e.changedTouches[0].clientX : (e as React.MouseEvent).clientX;
-    if (startX.current - endX.current > 50) handleNext();
-    else if (startX.current - endX.current < -50) handlePrev();
-  };
+  const floatingShapes = Array.from({ length: 6 });
 
   return (
-    <section id="home" className="h-screen relative overflow-hidden bg-gray-50 flex items-center">
-      {floatingShapes.map((shape, idx) => (
+    <section
+      id="home"
+      className="h-screen flex items-center justify-center relative overflow-hidden bg-gradient-to-r from-pink-100 to-yellow-100"
+    >
+      {/* Floating Shapes */}
+      {floatingShapes.map((_, i) => (
         <motion.div
-          key={idx}
-          className="absolute rounded-full border-2 border-gray-300"
-          style={{ width: shape.size, height: shape.size, top: shape.top, left: shape.left, rotate: shape.rotate }}
-          animate={{ y: [0, -15, 0] }}
-          transition={{ duration: 15 + idx * 2, repeat: Infinity, ease: 'easeInOut' }}
+          key={i}
+          className="absolute border border-gray-400 rounded-full"
+          style={{
+            width: 80 + i * 20,
+            height: 80 + i * 20,
+            top: `${20 + i * 10}%`,
+            left: `${10 + i * 15}%`,
+          }}
+          animate={{ y: [0, -20, 0] }}
+          transition={{ repeat: Infinity, duration: 8 + i }}
         />
       ))}
 
-      <div className="container mx-auto grid md:grid-cols-2 items-center px-4 z-10">
-        <div className="text-center md:text-left z-10">
-          <motion.h1 className="text-5xl md:text-7xl font-playfair font-bold mb-4 text-gray-900" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
-            Not Just Art, A Piece of Me
-          </motion.h1>
-          <motion.p className="text-lg mb-8 text-gray-700" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.2 }}>
-            Handmade Arts by Minti Creations.
-          </motion.p>
-          <motion.a
-            href="#gallery"
-            className="bg-gray-900 text-white px-8 py-3 rounded-full text-lg shadow-lg inline-block"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ type: 'spring', stiffness: 200, delay: 0.4 }}
-            whileHover={{ scale: 1.05 }}
-          >
-            Explore My Work
-          </motion.a>
-        </div>
-
-        <div
-          ref={containerRef}
-          className="hidden md:flex justify-center items-center p-8 relative w-full h-96 rounded-lg shadow-2xl overflow-hidden"
-          onTouchStart={handleDragStart}
-          onTouchEnd={handleDragEnd}
-          onMouseDown={handleDragStart}
-          onMouseUp={handleDragEnd}
+      <motion.div style={{ y }} className="text-center z-10">
+        <motion.h1
+          className="text-6xl md:text-7xl font-bold mb-6"
+          initial={{ opacity: 0, y: 60 }}
+          animate={{ opacity: 1, y: 0 }}
         >
-          <AnimatePresence mode="wait">
-            <motion.img
-              key={current}
-              src={carouselImages[current]}
-              alt={`Carousel ${current + 1}`}
-              className="w-full h-96 object-cover rounded-lg"
-              initial={{ opacity: 0, x: 100 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -100 }}
-              transition={{ duration: 0.8 }}
-            />
-          </AnimatePresence>
+          Not Just Art
+          <br /> A Piece of Me
+        </motion.h1>
 
-          <button onClick={handlePrev} className="absolute left-2 top-1/2 -translate-y-1/2 bg-gray-200/40 text-gray-900 p-2 rounded-full hover:bg-gray-200/60 z-20">‹</button>
-          <button onClick={handleNext} className="absolute right-2 top-1/2 -translate-y-1/2 bg-gray-200/40 text-gray-900 p-2 rounded-full hover:bg-gray-200/60 z-20">›</button>
-        </div>
+        <motion.p
+          className="text-lg mb-6"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+        >
+          Handmade creations by Minti
+        </motion.p>
+
+        <motion.a
+          href="#gallery"
+          whileHover={{ scale: 1.1 }}
+          className="bg-black text-white px-8 py-3 rounded-full"
+        >
+          Explore My Work
+        </motion.a>
+      </motion.div>
+    </section>
+  );
+}
+function AboutSection() {
+  return (
+    <section id="about" className="py-32 relative bg-white overflow-hidden">
+      <div className="container mx-auto grid md:grid-cols-2 gap-12 items-center px-6">
+
+        <motion.img
+          src="/artist-portrait.jpg"
+          className="w-80 h-80 rounded-full object-cover mx-auto shadow-xl"
+          whileHover={{ scale: 1.05 }}
+        />
+
+        <motion.div
+          initial={{ opacity: 0, x: 60 }}
+          whileInView={{ opacity: 1, x: 0 }}
+        >
+          <h2 className="text-4xl mb-4">Patterns That Tell Stories</h2>
+
+          <p className="text-gray-600 mb-4">
+            Hi, I'm Mansi — the artist behind Minti Creations.
+            Art is meditation for me.
+          </p>
+
+          <p className="text-gray-600">
+            Every artwork begins with a single dot
+            and grows into a peaceful universe.
+          </p>
+        </motion.div>
+
       </div>
     </section>
   );
 }
+function GallerySection() {
+  const [filter, setFilter] = useState('All');
+  const [selected, setSelected] = useState(null);
 
-// ========= ABOUT SECTION =========
-function AboutSection() {
+  const filters = ['All', 'Custom Work', 'Canvas', 'Mandala Art', 'Photoshop Art'];
+
+  const items =
+    filter === 'All'
+      ? galleryItems
+      : galleryItems.filter(i => i.category === filter);
+
   return (
-    <section id="about" className="relative py-24 bg-gradient-to-r from-gray-50 to-white overflow-hidden">
-      <div className="absolute inset-0">
-        {[...Array(6)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute rounded-full border-2 border-dotted border-gray-700 opacity-40"
-            style={{ width: 150 + i * 40, height: 150 + i * 40, top: `${15 * i}%`, left: `${20 * i}%` }}
-            animate={{ rotate: 360 }}
-            transition={{ repeat: Infinity, duration: 60 + i * 10, ease: 'linear' }}
-          />
+    <section id="gallery" className="py-32 bg-gray-50">
+      <h2 className="text-4xl text-center mb-12">My Work</h2>
+
+      <div className="flex justify-center gap-3 flex-wrap mb-10">
+        {filters.map(f => (
+          <button
+            key={f}
+            onClick={() => setFilter(f)}
+            className={`px-5 py-2 rounded-full transition ${
+              filter === f ? 'bg-black text-white scale-105' : 'bg-gray-200'
+            }`}
+          >
+            {f}
+          </button>
         ))}
       </div>
 
-      <div className="container mx-auto grid md:grid-cols-2 gap-12 items-center px-4 relative z-10">
-        <motion.div
-          className="flex justify-center"
-          initial={{ opacity: 0, x: -50 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-        >
-          <motion.img
-            src="/artist-portrait.jpg"
-            alt="Portrait of the artist"
-            className="w-80 h-80 rounded-full object-cover shadow-2xl border-4 border-white"
-            whileHover={{ scale: 1.08, rotate: 2 }}
-            transition={{ type: 'spring', stiffness: 200 }}
-          />
-        </motion.div>
+      <div className="grid md:grid-cols-4 gap-6 px-6">
+        {items.map(item => (
+          <motion.div
+            key={item.id}
+            whileHover={{ scale: 1.07 }}
+            className="relative group cursor-pointer"
+            onClick={() => setSelected(item)}
+          >
+            <img
+              src={item.img}
+              className="w-full h-72 object-cover rounded-xl"
+            />
 
-        <motion.div
-          className="backdrop-blur-md bg-white/70 p-8 rounded-2xl shadow-xl relative"
-          initial={{ opacity: 0, x: 50 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-        >
-          <h2 className="text-4xl font-playfair mb-4 text-gray-900">Patterns That Tell Stories</h2>
-          <p className="mb-4 text-gray-700">
-            Hello! I'm <span className="font-semibold text-gray-900">Mansi</span>, the hands and heart behind Minti Creations. For me, art is more than just drawing—it’s a gentle meditation, a way to slow down and let creativity flow into soothing Creations.
-          </p>
-          <p className="text-gray-700">
-            Every piece begins with a single dot, unfolding into a universe of shapes, colors, and calm. Through my work, I hope to share that same sense of peace and quiet joy that I find while creating.
-          </p>
-        </motion.div>
+            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition">
+              {item.title}
+            </div>
+          </motion.div>
+        ))}
       </div>
+
+      <AnimatePresence>
+        {selected && (
+          <motion.div
+            className="fixed inset-0 bg-black/90 flex justify-center items-center z-50"
+            onClick={() => setSelected(null)}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+          >
+            <motion.img
+              src={selected.img}
+              className="max-w-[90%] max-h-[90%]"
+              initial={{ scale: 0.8 }}
+              animate={{ scale: 1 }}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }
-
-// ========= GALLERY SECTION =========
-function GallerySection() {
-  const [activeFilter, setActiveFilter] = useState('All');
-  const filters = ['All', 'Custom Work', 'Canvas', 'Mandala Art'];
-
-  const sortedGalleryItems = [
-    ...galleryItems.filter(item => item.category === 'Custom Work'),
-    ...galleryItems.filter(item => item.category === 'Canvas'),
-    ...galleryItems.filter(item => item.category === 'Mandala Art'),
-  ];
-
-  const filteredItems = activeFilter === 'All' ? sortedGalleryItems : sortedGalleryItems.filter(item => item.category === activeFilter);
-
-  return (
-    <section id="gallery" className="py-24 bg-white">
-      <div className="container mx-auto px-4">
-        <h2 className="text-4xl font-playfair text-center mb-12 text-gray-900">My Work</h2>
-
-        <div className="flex justify-center space-x-2 md:space-x-4 mb-8">
-          {filters.map(filter => (
-            <button
-              key={filter}
-              onClick={() => setActiveFilter(filter)}
-              className={`px-4 py-2 rounded-full transition text-sm md:text-base ${activeFilter === filter ? 'bg-gray-900 text-white' : 'bg-gray-200 text-gray-900'}`}
-            >
-              {filter}
-            </button>
-          ))}
-        </div>
-
-        <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          <AnimatePresence>
-            {filteredItems.map(item => (
-              <motion.div
-                key={item.id}
-                layout
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.8 }}
-                transition={{ duration: 0.4 }}
-                className="group relative overflow-hidden rounded-lg shadow-lg cursor-pointer"
-              >
-                <img src={item.img} alt={item.title} className="w-full h-72 object-cover group-hover:scale-110 transition-transform duration-300" />
-                <div className="absolute inset-0 bg-gray-900/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center p-4">
-                  <h3 className="text-white text-xl font-playfair text-center">{item.title}</h3>
-                </div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </motion.div>
-      </div>
-    </section>
-  );
-}
-
 
 // ========= INTERACTIVE ANIMATION SECTION =========
 function InteractiveAnimationSection() {
