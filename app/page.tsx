@@ -40,6 +40,12 @@ const galleryItems = [
   { id: 32, title: 'Separated but still connected', category: 'Mandala Art', img: '/mandala-8.jpg' },
   { id: 33, title: 'Sunset', category: 'Photoshop Art', img: '/psd-1.jpeg' },
   { id: 34, title: 'night sky', category: 'Photoshop Art', img: '/psd-2.jpeg' },
+  { id: 35, title: 'Castle', category: 'Photoshop Art', img: '/psd-3.jpeg' },
+  { id: 36, title: 'night city', category: 'Photoshop Art', img: '/psd-4.jpeg' },
+  { id: 37, title: 'Parrot', category: 'Photoshop Art', img: '/psd-5.jpeg' },
+  { id: 38, title: 'Pencil', category: 'Photoshop Art', img: '/psd-6.jpeg' },
+  { id: 39, title: 'Evening in downtown', category: 'Photoshop Art', img: '/psd-7.jpeg' },
+  { id: 40, title: 'reflecting world', category: 'Photoshop Art', img: '/psd-9.jpeg' },
 ];
 
 // ======== CAROUSEL IMAGES ========
