@@ -98,58 +98,82 @@ function Header() {
 }
 
 function HeroSection() {
-  const { scrollY } = useScroll();
-  const y = useTransform(scrollY, [0, 500], [0, 150]);
+  const [current, setCurrent] = useState(0);
 
-  const floatingShapes = Array.from({ length: 6 });
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrent(prev => (prev + 1) % carouselImages.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const nextSlide = () =>
+    setCurrent(prev => (prev + 1) % carouselImages.length);
+
+  const prevSlide = () =>
+    setCurrent(prev => (prev - 1 + carouselImages.length) % carouselImages.length);
 
   return (
-    <section
-      id="home"
-      className="h-screen flex items-center justify-center relative overflow-hidden bg-gradient-to-r from-pink-100 to-yellow-100"
-    >
-      {/* Floating Shapes */}
-      {floatingShapes.map((_, i) => (
-        <motion.div
-          key={i}
-          className="absolute border border-gray-400 rounded-full"
-          style={{
-            width: 80 + i * 20,
-            height: 80 + i * 20,
-            top: `${20 + i * 10}%`,
-            left: `${10 + i * 15}%`,
-          }}
-          animate={{ y: [0, -20, 0] }}
-          transition={{ repeat: Infinity, duration: 8 + i }}
-        />
-      ))}
+    <section className="h-screen relative overflow-hidden">
 
-      <motion.div style={{ y }} className="text-center z-10">
+      {/* Background Images */}
+      <AnimatePresence mode="wait">
+        <motion.img
+          key={current}
+          src={carouselImages[current]}
+          className="absolute w-full h-full object-cover"
+          initial={{ opacity: 0, scale: 1.1 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 1 }}
+        />
+      </AnimatePresence>
+
+      {/* Dark Overlay */}
+      <div className="absolute inset-0 bg-black/50" />
+
+      {/* Content */}
+      <div className="relative z-10 h-full flex flex-col justify-center items-center text-center text-white px-4">
         <motion.h1
-          className="text-6xl md:text-7xl font-bold mb-6"
-          initial={{ opacity: 0, y: 60 }}
+          className="text-5xl md:text-7xl font-bold mb-4"
+          initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          Not Just Art
-          <br /> A Piece of uss
+          Not Just Art,
+          <br /> A Piece of Me
         </motion.h1>
 
         <motion.p
-          className="text-lg mb-6"
+          className="mb-6 text-lg"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
         >
-          Handmade creations by Minti
+          Mandala • Canvas • Photoshop Art
         </motion.p>
 
         <motion.a
           href="#gallery"
           whileHover={{ scale: 1.1 }}
-          className="bg-black text-white px-8 py-3 rounded-full"
+          className="bg-white text-black px-6 py-3 rounded-full"
         >
           Explore My Work
         </motion.a>
-      </motion.div>
+      </div>
+
+      {/* Controls */}
+      <button
+        onClick={prevSlide}
+        className="absolute left-4 top-1/2 -translate-y-1/2 text-white text-3xl z-20"
+      >
+        ‹
+      </button>
+
+      <button
+        onClick={nextSlide}
+        className="absolute right-4 top-1/2 -translate-y-1/2 text-white text-3xl z-20"
+      >
+        ›
+      </button>
     </section>
   );
 }
