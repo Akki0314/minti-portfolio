@@ -96,87 +96,101 @@ function Header() {
     </header>
   );
 }
-
 function HeroSection() {
   const [current, setCurrent] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrent(prev => (prev + 1) % carouselImages.length);
-    }, 4000);
+    }, 5000);
     return () => clearInterval(interval);
   }, []);
 
-  const nextSlide = () =>
-    setCurrent(prev => (prev + 1) % carouselImages.length);
+  const handlePrev = () => setCurrent(prev => (prev - 1 + carouselImages.length) % carouselImages.length);
+  const handleNext = () => setCurrent(prev => (prev + 1) % carouselImages.length);
 
-  const prevSlide = () =>
-    setCurrent(prev => (prev - 1 + carouselImages.length) % carouselImages.length);
+  const floatingShapes = [
+    { size: 50, top: '20%', left: '10%', rotate: 0 },
+    { size: 80, top: '40%', left: '70%', rotate: 45 },
+    { size: 60, top: '70%', left: '30%', rotate: -30 },
+    { size: 100, top: '10%', left: '50%', rotate: 15 },
+    { size: 40, top: '60%', left: '80%', rotate: -45 },
+  ];
+
+  const startX = useRef(0);
+  const endX = useRef(0);
+
+  const handleDragStart = (e: React.TouchEvent | React.MouseEvent) => {
+    startX.current = 'touches' in e ? e.touches[0].clientX : (e as React.MouseEvent).clientX;
+  };
+  const handleDragEnd = (e: React.TouchEvent | React.MouseEvent) => {
+    endX.current = 'changedTouches' in e ? e.changedTouches[0].clientX : (e as React.MouseEvent).clientX;
+    if (startX.current - endX.current > 50) handleNext();
+    else if (startX.current - endX.current < -50) handlePrev();
+  };
 
   return (
-    <section className="h-screen relative overflow-hidden">
-
-      {/* Background Images */}
-      <AnimatePresence mode="wait">
-        <motion.img
-          key={current}
-          src={carouselImages[current]}
-          className="absolute w-full h-full object-cover"
-          initial={{ opacity: 0, scale: 1.1 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 1 }}
+    <section id="home" className="h-screen relative overflow-hidden bg-gray-50 flex items-center">
+      {floatingShapes.map((shape, idx) => (
+        <motion.div
+          key={idx}
+          className="absolute rounded-full border-2 border-gray-300"
+          style={{ width: shape.size, height: shape.size, top: shape.top, left: shape.left, rotate: shape.rotate }}
+          animate={{ y: [0, -15, 0] }}
+          transition={{ duration: 15 + idx * 2, repeat: Infinity, ease: 'easeInOut' }}
         />
-      </AnimatePresence>
+      ))}
 
-      {/* Dark Overlay */}
-      <div className="absolute inset-0 bg-black/50" />
+      <div className="container mx-auto grid md:grid-cols-2 items-center px-4 z-10">
+        <div className="text-center md:text-left z-10">
+          <motion.h1 className="text-5xl md:text-7xl font-playfair font-bold mb-4 text-gray-900" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
+            Not Just Art, A Piece of Me
+          </motion.h1>
+          <motion.p className="text-lg mb-8 text-gray-700" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.2 }}>
+            Handmade Arts by Minti Creations.
+          </motion.p>
+          <motion.a
+            href="#gallery"
+            className="bg-gray-900 text-white px-8 py-3 rounded-full text-lg shadow-lg inline-block"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ type: 'spring', stiffness: 200, delay: 0.4 }}
+            whileHover={{ scale: 1.05 }}
+          >
+            Explore My Work
+          </motion.a>
+        </div>
 
-      {/* Content */}
-      <div className="relative z-10 h-full flex flex-col justify-center items-center text-center text-white px-4">
-        <motion.h1
-          className="text-5xl md:text-7xl font-bold mb-4"
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
+        <div
+          ref={containerRef}
+          className="hidden md:flex justify-center items-center p-8 relative w-full h-96 rounded-lg shadow-2xl overflow-hidden"
+          onTouchStart={handleDragStart}
+          onTouchEnd={handleDragEnd}
+          onMouseDown={handleDragStart}
+          onMouseUp={handleDragEnd}
         >
-          Not Just Art,
-          <br /> A Piece of Me
-        </motion.h1>
+          <AnimatePresence mode="wait">
+            <motion.img
+              key={current}
+              src={carouselImages[current]}
+              alt={`Carousel ${current + 1}`}
+              className="w-full h-96 object-cover rounded-lg"
+              initial={{ opacity: 0, x: 100 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -100 }}
+              transition={{ duration: 0.8 }}
+            />
+          </AnimatePresence>
 
-        <motion.p
-          className="mb-6 text-lg"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-        >
-          Mandala • Canvas • Photoshop Art
-        </motion.p>
-
-        <motion.a
-          href="#gallery"
-          whileHover={{ scale: 1.1 }}
-          className="bg-white text-black px-6 py-3 rounded-full"
-        >
-          Explore My Work
-        </motion.a>
+          <button onClick={handlePrev} className="absolute left-2 top-1/2 -translate-y-1/2 bg-gray-200/40 text-gray-900 p-2 rounded-full hover:bg-gray-200/60 z-20">‹</button>
+          <button onClick={handleNext} className="absolute right-2 top-1/2 -translate-y-1/2 bg-gray-200/40 text-gray-900 p-2 rounded-full hover:bg-gray-200/60 z-20">›</button>
+        </div>
       </div>
-
-      {/* Controls */}
-      <button
-        onClick={prevSlide}
-        className="absolute left-4 top-1/2 -translate-y-1/2 text-white text-3xl z-20"
-      >
-        ‹
-      </button>
-
-      <button
-        onClick={nextSlide}
-        className="absolute right-4 top-1/2 -translate-y-1/2 text-white text-3xl z-20"
-      >
-        ›
-      </button>
     </section>
   );
 }
+
 function AboutSection() {
   return (
     <section id="about" className="py-32 relative bg-white overflow-hidden">
