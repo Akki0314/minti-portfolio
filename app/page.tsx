@@ -131,7 +131,7 @@ function HeroSection() {
           animate={{ opacity: 1, y: 0 }}
         >
           Not Just Art
-          <br /> A Piece of Me
+          <br /> A Piece of uss
         </motion.h1>
 
         <motion.p
