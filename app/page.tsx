@@ -187,7 +187,7 @@ function AboutSection() {
 }
 function GallerySection() {
   const [filter, setFilter] = useState('All');
-  const [selected, setSelected] = useState(null);
+  const [selected, setSelected] = useState<any>(null);
 
   const filters = ['All', 'Custom Work', 'Canvas', 'Mandala Art', 'Photoshop Art'];
 
